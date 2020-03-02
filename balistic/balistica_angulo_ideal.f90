@@ -1,0 +1,76 @@
+PROGRAM BALISTICA_CALCULO_DO_ANGULO
+	IMPLICIT NONE
+	INTEGER :: R, P
+	REAL :: ANG, ANGG, V, X, Y, DX, DY, B, T, U, PI=3.14159265, MODV, G=9.8E0, H=0.01, VI, ANGMAX,Q
+	
+	X=0
+	Y=0
+	ANG=0E0
+	
+	PRINT*, "VOCE GOSTARIA DE UTILIZAR A RESISTENCIA DO AR? (B=4*10^(-5)) ; 0 = SIM ; 1 = NAO"
+	READ*, R
+	
+	IF (R==0) THEN
+		B=4E-5
+		ELSE
+		B=0
+	END IF
+	
+	PRINT*, "DIGITE A VELOCIDADE DE LANÇAMENTO DA BALA(m/s)"
+	READ*, V
+	
+	Q=0E0
+	VI=V
+	
+	DO P=0,20000
+	
+		V=VI
+	
+		Q=Q+0.0001
+		
+		T=0
+		X=0
+		Y=0
+		
+		ANG=Q
+		
+		
+		DX=V*COS(ANG)
+		DY=V*SIN(ANG)
+		
+		
+		
+		DO
+		
+			
+			
+			MODV=SQRT((DX**2)+(DY**2))
+			
+			T=T+H
+			
+		
+			DY=DY-H*(G+B*DY*MODV)
+			DX=DX-H*(B*DX*MODV)
+			Y=Y+H*DY
+			X=X+H*DX
+			
+			
+			IF (Y<=0) EXIT		
+		
+		END DO
+		
+		!PRINT*, ANG, X, Q
+		
+		IF (U<=X) THEN
+			U=X
+			ANGMAX=ANG
+		END IF
+		
+		
+	END DO
+	
+	ANGMAX=(ANGMAX*180E0)/PI
+	
+	PRINT*,"O ANGULO DE MAIOR ALCANCE É",ANGMAX
+	
+END PROGRAM BALISTICA_CALCULO_DO_ANGULO

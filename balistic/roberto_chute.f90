@@ -1,0 +1,130 @@
+PROGRAM CHUTE_ROBERTO
+	IMPLICIT NONE
+	INTEGER :: I,J
+	REAL :: X,VX,FX,Y,VY,FY,Z,VZ,FZ,V,FI,TETA,PI=3.141592,H=0.1,GAMA,FAX,FAY,FAZ,FMX,FMY,FMZ,W,G,ZERO=0E0
+	CHARACTER(LEN=1024) :: TRAJ
+	
+	OPEN (UNIT=1,FILE="angulos_de_gol.txt")
+	
+	PRINT*, "DIGITE O VALOR DA GRAVIDADE LOCAL"
+	READ*,G
+	
+	W=26.2 !VELOCIDADE ANGULAR DA BOLA
+	FI=-90E0 !ANGULO INICIAL EM Y
+	TETA=0E0 !ANGULO INICIAL EM Z
+	
+	DO I=0,180
+		
+		FI=FI+1
+		TETA=0
+		
+		DO J=0,90
+			
+			TETA=TETA+1
+			
+			V=100E0/3.6E0
+			X=0
+			Y=0
+			Z=0
+			
+			CALL VELOCIDADE(V,TETA,FI,VX,VY,VZ)
+			
+			DO
+			
+				
+			
+				X=X+H*VX
+				Y=Y+H*VY
+				Z=Z+H*VZ
+			
+				GAMA=0E0+(0.0058E0/(1E0+EXP((V-35E0)/5E0)))
+			
+				CALL FORCA (GAMA,V,VX,VY,W,FAX,FMX)
+				VX=VX+H*(FAX-FMY)
+	
+				CALL FORCA (GAMA,V,VY,VX,W,FAY,FMY)
+				VY=VY+H*(FAY+FMY)
+			
+				CALL FORCA (GAMA,V,VZ,ZERO,W,FAZ,FMZ)
+				VZ=VZ+H*(FAZ-G)
+				
+				
+				V=SQRT((VX**2)+(VY**2)+(VZ**2))
+				
+			
+				IF (Z<=0 .OR. X>=40) EXIT
+			
+			END DO
+			
+			
+			IF ((Z<=2.5) .AND. (Y<=10 .AND. Y>=4) .AND. (X>=40)) THEN 
+				PRINT*, "GOOOOOOOOL!!!!!!",TETA,FI
+				
+				!SE O GOL FOI FEITO, REFAZ A ROTINA PARA ESCREVER A TRAJETORIA
+				
+				WRITE(TRAJ,*) int(FI),int(TETA),'.txt' !GERA UM ARQUIVO DE NOME IGUAL AOS ANGULOS FI E TETA
+				TRAJ=ADJUSTL(TRAJ)
+				OPEN (UNIT=2,FILE=TRAJ)
+			
+				V=100E0/3.6E0
+				X=0
+				Y=0
+				Z=0
+			
+				CALL VELOCIDADE(V,TETA,FI,VX,VY,VZ)
+				
+				DO
+				
+			
+					X=X+H*VX
+					Y=Y+H*VY
+					Z=Z+H*VZ
+			
+					GAMA=0.0039E0+(0.0058E0/(1E0+EXP((V-35E0)/5E0)))
+			
+					CALL FORCA (GAMA,V,VX,VY,W,FAX,FMX)
+					VX=VX+H*(FAX-FMY)
+	
+					CALL FORCA (GAMA,V,VY,VX,W,FAY,FMY)
+					VY=VY+H*(FAY+FMY)
+			
+					CALL FORCA (GAMA,V,VZ,ZERO,W,FAZ,FMZ)
+					VZ=VZ+H*(FAZ-G)
+				
+				
+					V=SQRT((VX**2)+(VY**2)+(VZ**2))
+			
+					WRITE (2,*), X,Y,Z
+					
+					IF (Z<=0 .OR. X>=40) EXIT
+				
+				
+				END DO
+				
+				CLOSE(UNIT=2)
+				
+				WRITE (1,*), FI, TETA
+				
+			END IF
+			
+		END DO
+			
+	END DO
+	
+	CLOSE (UNIT=1)
+		
+END PROGRAM CHUTE_ROBERTO
+
+
+SUBROUTINE VELOCIDADE (A,T,F,AX,AY,AZ)
+	AX=A*SIN(T*3.141592E0/180E0)*COS(F*3.141592E0/180E0)
+	AY=A*SIN(T*3.141592E0/180E0)*SIN(F*3.141592E0/180E0)
+	AZ=A*COS(T*3.141592E0/180E0)
+	RETURN
+END SUBROUTINE VELOCIDADE
+
+SUBROUTINE FORCA (gama,v,vd,vdd,w,fa,fm) !gama,vel,vel direcional1, vel direcional2, omega, res do ar, força magnus
+	REAL :: gama,v,vd,w,fa,fm,vdd
+	fa = (-1)*gama*v*vd
+	fm = (5E-3)*w*vdd
+END SUBROUTINE FORCA
