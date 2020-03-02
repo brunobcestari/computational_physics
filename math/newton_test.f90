@@ -1,0 +1,114 @@
+PROGRAM RAIZ_NEWTON
+
+	IMPLICIT NONE
+	
+	REAL :: F,DF,X,K,TOL,X0,X1,X2,A,B,C,J
+	
+	A=0
+	B=0
+	C=0
+	X=0
+	K=0
+	TOL=0
+
+	PRINT*,"DIGITE OS TERMOS DE SEU POLINÔMIO, EM ORDEM, A,B,C : A*X²+B*X+C"
+	READ*, A,B,C
+
+	IF (((B**2)-(4*A*C))<0) THEN
+
+		PRINT*, "O POLINOMIO POSSUI RAIZ COMPLEXA, ESCOLHA OUTROS VALORES"
+		A=0
+		B=0
+		C=0
+		
+		ELSE
+
+		PRINT*, "DIGITE A TOLERANCIA"
+		READ*, TOL
+
+	END IF
+
+	IF (A<0) THEN !COMO QUERO APENAS AS RAIZES, NAO IMPORTA O SINAL DO POLINOMIO
+		A=-A
+		B=-B
+		C=-C
+	END IF
+
+	X=(10**4)*(ABS(B)+ABS(C)+ABS(A))
+	
+	X0=X
+
+	DO
+
+		X=X-((F(A,B,C,X))/(DF(A,B,X)))
+
+		K=ABS(F(A,B,C,X))
+
+		
+		IF (K<TOL) THEN
+
+			X1=X  !PRIMEIRA RAIZ DA EQUAÇAO
+									
+			IF (F(A,B,C,X0)*F(A,B,C,X1-2*TOL)<0) THEN !PROCURANDO UMA POSSIVEL SEGUNDA RAIZ
+					X0=X1
+					EXIT
+			END IF
+
+			EXIT
+		END IF
+
+	END DO
+
+	IF (X0==X1) THEN
+		
+			X=X0-2*TOL  !PARA NAO ENCONTRAR A MESMA RAIZ
+
+			DO
+				
+				IF (DF(A,B,X)>0) THEN
+						J=-1
+					ELSE
+						J=1
+				END IF
+
+				X=X-(J)*((F(A,B,C,X))/(DF(A,B,X)))   !O SINAL DE + E O ABS SAO PARA CORRIGIR O SINAL NO LADO NEGATIVO DA FUNÇAO
+		
+				K=ABS(F(A,B,C,X))
+
+				IF (K<TOL) THEN
+					X2=X
+					EXIT
+				END IF
+
+			END DO
+
+
+		ELSE
+
+			X2=X1
+
+	END IF
+	
+	PRINT*, "AS RAIZES DA EQUAÇAO SAO",X1,X2
+
+	PRINT*,"POR BASKARA", (-B+SQRT((B**2)-4*A*C))/(2*A),(-B-SQRT((B**2)-4*A*C))/(2*A)
+		
+
+END PROGRAM RAIZ_NEWTON
+
+
+REAL FUNCTION F(a,b,c,t)
+
+	REAL :: a,b,c,t
+	F=a*(t**2)+(b*t)+c
+	RETURN
+
+END FUNCTION F
+
+REAL FUNCTION DF(a,b,t)
+
+	REAL :: t,a,b
+	DF=(2*a*t)+b
+	RETURN
+
+END FUNCTION DF
