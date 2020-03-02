@@ -1,0 +1,71 @@
+PROGRAM COSSENO
+	IMPLICIT NONE
+	REAL :: A, PI=3.141592, P, C, J, K, ABSJ
+	INTEGER :: N, FAT, I,Q, B, PREC, W, L
+	
+	L=0
+	
+	PRINT*, "DIGITE O VALOR DO ARCO (EM GRAUS)"
+	READ*, A
+	
+	A=ABS(A)
+	IF (A>90) THEN
+	
+		L=INT(A/90)
+		A=90-(A-90)
+		
+	END IF
+	
+	B=0
+	J=0
+	C=0
+	N=-1
+	DO
+		
+		N=N+1
+		
+		P=(PI*A)/180
+		
+		N=2*N
+		CALL FATORIAL (N, B)
+		N=N/2
+		CALL TERMO (N,P,B,J)
+		
+		C=C+(J)
+	
+		ABSJ=ABS(J)
+		IF (ABSJ<1E-5) EXIT
+		
+	END DO
+	
+	C=((-1)**L)*C
+	
+	PRINT*, C
+END PROGRAM COSSENO
+
+
+
+SUBROUTINE FATORIAL (ARG, FAT)
+	IMPLICIT NONE
+	INTEGER :: I, FAT, ARG,Y
+		IF (ARG>0) THEN
+		Y=0
+		I=0
+		FAT=1
+			DO I=1,ARG
+				Y=Y+1
+				FAT=FAT*Y
+			END DO
+		
+			ELSE
+				FAT=1
+		END IF
+END SUBROUTINE FATORIAL
+
+
+SUBROUTINE TERMO (K,P,B,TERM)
+	IMPLICIT NONE
+	INTEGER :: K,B
+	REAL :: TERM, P
+		TERM=((-1)**K)*((P**(2*K)))/(B)
+END SUBROUTINE TERMO

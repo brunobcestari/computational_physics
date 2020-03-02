@@ -1,0 +1,24 @@
+PROGRAM SERIE_PI
+	IMPLICIT NONE
+	INTEGER :: M, N
+	REAL :: S,P
+	
+	DO
+	
+		M=0
+		S=0
+		P=0
+
+		PRINT*, "DIGITE O VALOR DE N (QUANTO MAIOR N, MAIOR SERÁ A PRECISÃO DE PI"
+		READ*, N
+        
+			DO M=0,N
+			S=S+(((-1E0)**M)/(2E0*M+1E0))
+			END DO
+               
+		P=4*S
+		PRINT*,"O VALOR DE PI É", P
+
+	END DO
+	
+END PROGRAM  SERIE_PI
